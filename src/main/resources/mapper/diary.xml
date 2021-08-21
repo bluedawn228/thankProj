@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mulcam.project.dao.DiaryDAO">
+
+	<!-- 게시글 id 생성을 위해 마지막 게시글 번호 조회 -->
+	<select id="selectMaxId" resultType="int">
+		select
+			nvl(max(diary_id),0)
+		from 
+			ttb_diary
+	</select>
+	
+	<!-- 명언 총 개수 -->
+	<select id="countAllPharse" resultType="int">
+		SELECT
+		    count(phrs_id)
+		FROM
+		    ttb_pharse
+	</select>
+	
+	<!-- 명언 1개 선택 -->
+	<select id="selectOnePharse" parameterType="int" resultType="PharseVO">
+		SELECT
+			    num,
+			    phrs_id,
+			    phrs_text,
+			    author
+			FROM
+			    (SELECT
+			        row_number() over(order by a.phrs_id) num,
+			        a.phrs_id,
+			        a.phrs_text,
+			        a.author
+			    FROM
+			        ttb_pharse a
+			        )
+			 WHERE num = #{randomNum}       
+	</select>
+	
+	
+	<!--  게시글 등록 -->
+	<insert id="insertOneArticle" parameterType="DiaryVO">
+		INSERT INTO ttb_diary (
+				    diary_id,
+				    img_id,
+				    emc_id,
+				    phrs_id,
+				    mv_id,
+				    mv_drt,
+				    author,
+				    tags,
+				    content,
+				    opened,
+				    comm_cnt,
+				    rcmd_cnt,
+				    view_cnt,
+				    stm_anl_pst,
+				    stm_anl_ntr,
+				    stm_anl_ngt,
+				    regdate
+		) VALUES (
+				    #{diaryId},
+				    0,
+				    #{emcId},
+				    #{phrsId},
+				    #{mvId},
+				    #{mvDrt},
+				    #{author},
+				    #{tags},
+				    #{content},
+				    0,
+				    0,
+				    0,
+				    0,
+				    #{stmAnlsPst},
+				    #{stmAnlsNtr},
+				    #{stmAnlsNgt},
+				    sysdate
+			)
+	
+	
+	</insert>
+	
+	
+	
+	<!-- 작성자의 마지막 1개의 게시글 조회 -->
+	<select id="selectRecentOneByAuthor" parameterType="String" resultType="DiaryVO">
+	
+			SELECT
+					    d.diary_id,
+					    d.img_id,
+					    d.emc_id,
+					    e.emc_data,
+					    e.emc_text,
+					    d.phrs_id,
+					    d.mv_id,
+					    d.mv_drt,
+					    d.author,
+					    d.tags,
+					    d.content,
+					    d.comm_cnt,
+					    d.rcmd_cnt,
+					    d.view_cnt,
+					    d.stm_anl_pst,
+					    d.stm_anl_ntr,
+					    d.stm_anl_ngt,
+					    d.regdate,
+					    d.moddate
+			FROM
+			    		ttb_diary d,  TTB_EMOTICON e,
+			    		(SELECT
+						    max(diary_id) as lastDiaryId
+						FROM
+						    ttb_diary
+						WHERE 
+							author = #{author}    )	b
+			WHERE
+						 d.emc_id = e.emc_id	
+				and   d.diary_id = b.lastDiaryId
+
+	</select>
+	
+	<!-- 1개의 게시글 조회 -->
+	<select id="selectOneByDiaryId" parameterType="int" resultType="DiaryVO">
+	
+			SELECT
+					    d.diary_id,
+					    d.img_id,
+					    d.emc_id,
+					    e.emc_data,
+					    e.emc_text,
+					    d.phrs_id,
+					    d.mv_id,
+					    d.mv_drt,
+					    d.author,
+					    d.tags,
+					    d.content,
+					    d.comm_cnt,
+					    d.rcmd_cnt,
+					    d.view_cnt,
+					    d.stm_anl_pst,
+					    d.stm_anl_ntr,
+					    d.stm_anl_ngt,
+					    d.regdate,
+					    d.moddate
+			FROM
+			    		ttb_diary d, TTB_EMOTICON e
+			WHERE
+						d.emc_id = e.emc_id
+				and  d.diary_id = #{diaryId}
+	    		
+	
+	</select>
+	
+	<!-- 작성자의 모든 게시글 조회 -->
+	<select id="selectAllByAuthor" parameterType="String" resultType="DiaryVO">
+			SELECT
+					    diary_id,
+					    img_id,
+					    emc_id,
+					    phrs_id,
+					    mv_id,
+					    mv_drt,
+					    author,
+					    tags,
+					    content,
+					    comm_cnt,
+					    rcmd_cnt,
+					    view_cnt,
+					    stm_anl_pst,
+					    stm_anl_ntr,
+					    stm_anl_ngt,
+					    regdate,
+					    moddate
+			FROM
+			    		ttb_diary
+			WHERE
+						 author = #{author}
+			ORDER by
+						 regdate desc
+	
+	</select>
+	
+	<!-- 작성자의 개시글 갯수 조회 -->
+	<select id="selectCntByAuthor" parameterType="String" resultType="int">
+			SELECT
+					    nvl(count(diary_id),0)
+			FROM
+			    		ttb_diary
+			WHERE
+						 author = #{author}
+			ORDER by
+						 regdate desc
+	</select>
+	
+	
+	<!--페이징 처리를 위해 넘버링 후 전체 게시글 조회 -->
+	<select id="selectAllOpenedForPaging"  resultType="DiaryVO">
+			SELECT
+					    num,
+					    diary_id,
+					    img_id,
+					    emc_id,
+					    phrs_id,
+					    mv_id,
+					    mv_drt,
+					    author,
+					    tags,
+					    content,
+					    opened,
+					    comm_cnt,
+					    rcmd_cnt,
+					    view_cnt,
+					    stm_anl_pst,
+					    stm_anl_ntr,
+					    stm_anl_ngt,
+					    regdate,
+					    moddate
+			FROM
+			    		(
+					    SELECT
+							    ROW_NUMBER()
+								            OVER(
+								                ORDER BY a.diary_id desc
+								            ) num,
+					            a.*
+					FROM
+					    		ttb_diary a
+					Where a.opened = 1    		
+			    		) 
+
+			WHERE
+						 num between #{startrow} and #{endrow}
+			ORDER by
+						 regdate desc
+	
+	</select>
+	
+	<!--페이징 처리를 위해 넘버링 후 전체 게시글 조회 -->
+	<select id="selectByAuthorForPaging"  resultType="DiaryVO">
+			SELECT
+					    num,
+					    diary_id,
+					    img_id,
+					    emc_id,
+					    phrs_id,
+					    mv_id,
+					    mv_drt,
+					    author,
+					    tags,
+					    content,
+					    opened,
+					    comm_cnt,
+					    rcmd_cnt,
+					    view_cnt,
+					    stm_anl_pst,
+					    stm_anl_ntr,
+					    stm_anl_ngt,
+					    regdate,
+					    moddate
+			FROM
+			    		(
+					    SELECT
+							    ROW_NUMBER()
+								            OVER(
+								                ORDER BY a.diary_id desc
+								            ) num,
+					            a.*
+					FROM
+					    		ttb_diary a
+					WHERE
+								a.author =   #{author}  		
+			    		) 
+
+			WHERE
+						 num between #{startrow} and #{endrow}
+			ORDER by
+						 regdate desc
+	
+	</select>
+
+</mapper>

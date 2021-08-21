@@ -17,15 +17,25 @@
 .tb-emotion td span {
 	font-size:60px;
 }
+
+
 .emoticon_wrapper {
 width:100%;
 margin: 0 auto;
 text-align : center;
 }
 .emoticon {
-	font-size:80px;
+	font-size:60px;
 }
 
+.emoticon.selectionE {
+	transform: scale(1.5);
+}
+
+.selectionM {
+	transform: scale(1.5);
+	box-shadow: 5px 10px 10px rgba(0, 0, 0, .6);
+}
 
 .tag{
 	width:auto;
@@ -73,19 +83,26 @@ text-align : center;
   color: #746e5e;
   text-shadow: 1px 1px 1px #fff, -1px 0px 0px rgba(0,0,0,.5);
 }
-.video-area{
-	margin: 0 auto;
+.video-wrapper{
+	width:100%;
 	text-align: center;
 }
-.paper-area {
-  margin: 0 auto;
 
-	
-       -webkit-font-smoothing: antialiased;
-     font-smoothing: antialiased;
-     box-sizing: border-box; 
+.video-area{
+	margin: 0 auto;
+	display:inline-block;
 }
 
+.paper-area {
+	margin: 0 auto;
+	-webkit-font-smoothing: antialiased;
+	font-smoothing: antialiased;
+	box-sizing: border-box; 
+}
+
+.step02 img:active {
+	box-shadow:5px 5px 5px 5px;
+}
 .step03 {
 	background-image:url(https://raw.github.com/subtlepatterns/SubtlePatterns/gh-pages/retina_wood.png);
   	background-attachment:fixed;
@@ -177,20 +194,48 @@ text-align : center;
 </style>
 <script>
 
+$(document).ready(function(){
+	const emoticons = document.querySelectorAll('.emoticon');
+	emoticons.forEach(emoticon => {
+		emoticon.addEventListener('click', () => {
+			resetEmoticons()
+			emoticon.classList.add('selectionE')
+	    })
+	});
 
+	function resetEmoticons() {
+	    emoticons.forEach(emoticon => {
+	        emoticon.classList.remove('selectionE')
+	    });
+	}
+	
+	
+	const medies = document.querySelectorAll('.medi');
+	medies.forEach(medi => {
+		medi.addEventListener('click', () => {
+			resetMedies()
+			medi.classList.add('selectionM')
+	    })
+	});
 
+	function resetMedies() {
+		medies.forEach(medi => {
+			medi.classList.remove('selectionM')
+	    });
+	}
+	
+});
 
 function selectEmotion(num,econ) {
 	//alert(num);
 	$("#selectedEmotion").val(num);
 	$("#diaryEmoticon").text(econ);
-	
-	
+
 }
 
 function selectMedi(num) {
 	//alert(num);
-	$("#selectedEmotion").val(num);
+	$("#selectedMedi").val(num);
 
 }
 
@@ -207,16 +252,40 @@ function showNext(step) {
 			}
 	} else if (step == "step02"){
 		var md = $("#selectedMedi").val();
-		$(".step02").hide();
-		$(".step03").show();
+		
+		if (md == null || md == "") {
+			alert("명상 영상을 선택해주세요");
+			return;
+		} else {
+			$(".step02").hide();
+			$(".step03").show();
+			$("#player").empty();
+		}
+		  
+	   	  
+	      // 2. This code loads the IFrame Player API code asynchronously.
+	      var tag = document.createElement('script');
+
+	      tag.src = "https://www.youtube.com/iframe_api";
+	      var firstScriptTag = document.getElementsByTagName('script')[0];
+	      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 		
 	} else if (step == "step03"){
 		$(".step03").hide();
 		$(".step04").show();
 		
-	} else if (step == "step04"){
-		alert("결과 페이지로 이동")
 		
+		
+	} else if (step == "step04"){
+		var lasttottime = $("#mediPlayTime").val();
+		if( lasttottime == null || lasttottime =="" ){
+			lasttottime= new Date().getTime() - starttime;
+			($("#mediPlayTime").val(lasttottime))
+		}
+			
+		alert($("#mediPlayTime").val());
+		$("#mediForm").submit();
+		//alert("1");
 	}
 
 }
@@ -231,11 +300,104 @@ function showPrevious(step) {
 		$(".step03").hide();
 		$(".step02").show();
 	}
-	//alert(em);
 	
 }
+var gKey;
+var tottime = 0;
+var starttime ;
 
+
+function mediSelection(key){
+	gKey=key;
+	//$(this).css('box-shadow','5px 10px 10px 5px');
+	$("#selectedMedi").val(key);
+	//$("#mediFrame").empty();
+	//$("#mediFrame").append(
+	//	'<iframe width="560" height="315" src="https://www.youtube.com/embed/'+key+' " title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' 
+	//);
+	
+
+     
+}
+
+// 3. This function creates an <iframe> (and YouTube player)
+//    after the API code downloads.
+var player;
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('player', {
+    height: '360',
+    width: '640',
+    videoId: gKey,
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange
+    }
+  });
+}
+
+// 4. The API will call this function when the video player is ready.
+function onPlayerReady(event) {
+  event.target.playVideo();
+}
+
+// 5. The API calls this function when the player's state changes.
+//    The function indicates that when playing a video (state=1),
+//    the player should play for six seconds and then stop.
+var done = false;
+function onPlayerStateChange(event) {
+/*   if (event.data == YT.PlayerState.PLAYING && !done) {
+    setTimeout(stopVideo, 6000);
+    done = true;
+  } */
+  
+  if (event.data == YT.PlayerState.PLAYING ) {
+      	starttime = new Date().getTime();
+
+    } else if (event.data == YT.PlayerState.PAUSED ) {
+  	  	tottime += new Date().getTime() - starttime;
+  	  	 $("#mediPlayTime").val(tottime);
+  	  	alert(typeof tottime);
+    } else if  (event.data == YT.PlayerState.ENDED ) {
+  	    tottime += new Date().getTime() - starttime;
+  	    $("#mediPlayTime").val(tottime);
+  	    console.log(tottime);
+    }
+} 
+function stopVideo() {
+  player.stopVideo();
+}
+
+function unicodeToChar(text){
+	   return text.replace(/\\u[\dA-F]{4}/gi, function(match){
+	      return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));});
+	}
 </script>
+
+  <script>
+  
+ 
+    </script>
+
+<style>
+.toggleArea .tit{display:inline-block;vertical-align:middle;margin:0 2px 2px 0}
+.toggleArea .switch {position: relative;display: inline-block;width: 60px;height: 30px;vertical-align:middle;margin:0}
+.toggleArea input {color : white; z-index:9999}
+.toggleArea .switch input {display:none;}
+.toggleArea .slider {display:inline-block;position: absolute;cursor: pointer;top: 0;left: 0;right: 0;bottom: 0;background-color: #ccc;border-radius:30px;-webkit-transition: .4s;transition: .4s;}
+/*.toggleArea .slider:before {position: absolute;content: "";height: 26px;width: 26px;left: 2px;bottom: 2px;background-color: white;-webkit-transition: .4s;transition: .4s;}*/
+.toggleArea .slider:before {position: absolute;content: "";height: 0;width: 0;left: 2px;bottom: 2px;-webkit-transition: .4s;transition: .4s;}
+.toggleArea input:focus + .slider {box-shadow: 0 0 1px #2196F3;}
+.toggleArea input:checked + .slider{background:#00bd85}
+.toggleArea input:checked + .slider:before{-webkit-transform: translateX(30px);-ms-transform: translateX(30px);transform: translateX(30px);}
+/* Rounded sliders */
+.toggleArea .slider.round{border-radius:30px;    }
+.toggleArea .slider.round:before{border-radius:50%;}
+.toggleArea p{display:inline-block;width:40px;font-size:15px;font-weight:bold;color:#ccc;vertical-align:middle;margin:0 0 2px 0}
+.toggleArea p.on{color:#019a6d}
+</style>
+
+
+
 </head>
 <body>
 
@@ -252,7 +414,7 @@ function showPrevious(step) {
 			<h1 class="stitle">감사명상 일기 작성</h1>
 			<div id="contents" class="container">
 				<div class="cont-mid ">
-					<div class="customer-service service-process">
+					<div class="">
 						
 						<div class="web step01">
 							<section class="txt">
@@ -260,26 +422,26 @@ function showPrevious(step) {
 							</section>
 							<table class="tb-emotion">
 								<tr class="tr-emotion">
-									<td><span onclick='javascript:selectEmotion(1,"🥰");'>🥰</span><br>행복함</td>
-									<td><span onclick='javascript:selectEmotion(2,"😄");'>😄</span><br>신이남</td>
-									<td><span onclick='javascript:selectEmotion(3,"😍");'>😍</span><br>감사함</td>
+									<td><div class="emoticon" onclick='javascript:selectEmotion(1,"&#128525;");'>&#128525;</div><br>행복함</td>
+									<td><div class="emoticon "  onclick='javascript:selectEmotion(2,"&#128523;");'>&#128523;</div><br>신이남</td>
+									<td><div class="emoticon "  onclick='javascript:selectEmotion(3,"&#128524;");'>&#128524;</div><br>감사함</td>
 								</tr>
 								
 								<tr class="tr-emotion">
-									<td><span onclick='javascript:selectEmotion(4,"😌");'>😌</span><br>차분함</td>
-									<td><span onclick='javascript:selectEmotion(5,"🤗");'>🤗</span><br>만족함</td>
-									<td><span onclick='javascript:selectEmotion(6,"😴");'>😴</span><br>피로</td>
+									<td><div class="emoticon"  onclick='javascript:selectEmotion(4,"&#128578;");'>&#128578;</div><br>차분함</td>
+									<td><div class="emoticon"  onclick='javascript:selectEmotion(5,"&#128538;");'>&#128538;</div><br>만족함</td>
+									<td><div class="emoticon"  onclick='javascript:selectEmotion(6,"&#128564;");'>&#128564;</div><br>피로</td>
 								</tr>
 								
 								<tr class="tr-emotion">
-									<td><span onclick='javascript:selectEmotion(7,"🙁");'>🙁</span><br>불확실함</td>
-									<td><span onclick='javascript:selectEmotion(8,"😑");'>😑</span><br>지루함</td>
-									<td><span onclick='javascript:selectEmotion(9,"😨");'>😨</span><br>불안함</td>
+									<td><div class="emoticon"  onclick='javascript:selectEmotion(7,"&#128551;");'>&#128551;</div><br>불확실함</td>
+									<td><div class="emoticon"  onclick='javascript:selectEmotion(8,"&#128554;");'>&#128554;</div><br>지루함</td>
+									<td><div class="emoticon"  onclick='javascript:selectEmotion(9,"&#128552;");'>&#128552;</div><br>불안함</td>
 								</tr>
 								<tr class="tr-emotion">
-									<td><span onclick='javascript:selectEmotion(10,"😡");'>😡</span><br>분노</td>
-									<td><span onclick='javascript:selectEmotion(11,"🤯");'>🤯</span><br>스트레스 받음</td>
-									<td><span onclick='javascript:selectEmotion(12,"😭");'>😭</span><br>슬픔</td>
+									<td><div class="emoticon"  onclick='javascript:selectEmotion(10,"&#128545;");'>&#128545;</div><br>분노</td>
+									<td><div class="emoticon"  onclick='javascript:selectEmotion(11,"&#128548;");'>&#128548;</div><br>스트레스 받음</td>
+									<td><div class="emoticon"  onclick='javascript:selectEmotion(12,"&#128557;");'>&#128557;</div><br>슬픔</td>
 								</tr>								
 							</table>
 							
@@ -292,11 +454,11 @@ function showPrevious(step) {
 						<div class="web step02" style="display:none;">
 							<ul class="signature row">
 								<li class="col-xs-12 col-sm-6">
-									<h2 ><strong>컨셉별 명상음악</strong></h2>
+									<section style="padding-left:150px;;width:100%;border:none;height:50px;"><h2 ><strong>컨셉별 명상음악</strong></h2></section>
 									<table>
 									<tr>
 										<td>
-											<img src='https://img.youtube.com/vi/OrVmxZATDCs/mqdefault.jpg' width='200px' height='150rem' >
+											<img class="medi" src="https://img.youtube.com/vi/AtLmxxnfFAI/mqdefault.jpg" width="100%" height="200px"  onclick="mediSelection('AtLmxxnfFAI');">
 										</td>
 										<td>
 											잔잔한 명상음악
@@ -304,7 +466,7 @@ function showPrevious(step) {
 									</tr>
 									<tr>
 										<td>
-											<img src='https://img.youtube.com/vi/OrVmxZATDCs/mqdefault.jpg' width='200px' height='150rem' >
+											<img class="medi" src="https://img.youtube.com/vi/21KEonvUpj4/mqdefault.jpg" width="100%" height="200px" onclick="mediSelection('21KEonvUpj4');">
 										</td>
 										<td>
 											경쾌한 명상음악
@@ -312,7 +474,7 @@ function showPrevious(step) {
 									</tr>
 									<tr>
 										<td>
-											<img src='https://img.youtube.com/vi/OrVmxZATDCs/mqdefault.jpg' width='200px' height='150rem' >
+											<img class="medi" src="https://img.youtube.com/vi/iLfbs7eV9dA/mqdefault.jpg" width="100%" height="200px"  onclick="mediSelection('iLfbs7eV9dA');">
 										</td>
 										<td>
 											산뜻한 명상음악
@@ -320,7 +482,7 @@ function showPrevious(step) {
 									</tr>
 									<tr>
 										<td>
-											<img src='https://img.youtube.com/vi/OrVmxZATDCs/mqdefault.jpg' width='200px' height='150rem' >
+											<img class="medi" src="https://img.youtube.com/vi/2N4eTTipm9I/mqdefault.jpg" width="100%" height="200px"  onclick="mediSelection('2N4eTTipm9I');">
 										</td>
 										<td>
 											웅장한 명상음악
@@ -328,7 +490,7 @@ function showPrevious(step) {
 									</tr>
 									<tr>
 										<td>
-											<img src='https://img.youtube.com/vi/OrVmxZATDCs/mqdefault.jpg' width='200px' height='150rem' >
+											<img class="medi" src="https://img.youtube.com/vi/hlWiI4xVXKY/mqdefault.jpg" width="100%" height="200px"  onclick="mediSelection('hlWiI4xVXKY');">
 										</td>
 										<td>
 											평온한 명상음악
@@ -338,11 +500,11 @@ function showPrevious(step) {
 									</table>
 								</li>
 								<li class="col-xs-12 col-sm-6">
-									<h2 ><strong>기분별 명상음악</strong></h2>
+									<section style="padding-left:150px;;width:100%;border:none;height:50px;"><h2 ><strong>기분별 명상음악</strong></h2></section>
 									<table>
 									<tr>
 										<td>
-											<img src='https://img.youtube.com/vi/OrVmxZATDCs/mqdefault.jpg' width='200px' height='150rem' >
+											<img class="medi" src="https://img.youtube.com/vi/pRDCtT-uOOQ/mqdefault.jpg" width="100%" height="200px" onclick="mediSelection('pRDCtT-uOOQ');">
 										</td>
 										<td>
 											스트레스 받을 때
@@ -350,7 +512,7 @@ function showPrevious(step) {
 									</tr>
 									<tr>
 										<td>
-											<img src='https://img.youtube.com/vi/OrVmxZATDCs/mqdefault.jpg' width='200px' height='150rem' >
+											<img class="medi" src="https://img.youtube.com/vi/su14Bo0-uMI/mqdefault.jpg" width="100%" height="200px" onclick="mediSelection('su14Bo0-uMI');">
 										</td>
 										<td>
 											우울할 때
@@ -358,7 +520,7 @@ function showPrevious(step) {
 									</tr>
 									<tr>
 										<td>
-											<img src='https://img.youtube.com/vi/OrVmxZATDCs/mqdefault.jpg' width='200px' height='150rem' >
+										<img class="medi" src="https://img.youtube.com/vi/su14Bo0-uMI/mqdefault.jpg" width="100%" height="200px" onclick="mediSelection('su14Bo0-uMI');">
 										</td>
 										<td>
 											불안할 때
@@ -366,7 +528,7 @@ function showPrevious(step) {
 									</tr>
 									<tr>
 										<td>
-											<img src='https://img.youtube.com/vi/OrVmxZATDCs/mqdefault.jpg' width='200px' height='150rem' >
+											<img class="medi" src="https://img.youtube.com/vi/-bGZS8wr-mU/mqdefault.jpg" width="100%" height="200px"  onclick="mediSelection('-bGZS8wr-mU');">
 										</td>
 										<td>
 											화가날 때
@@ -374,7 +536,7 @@ function showPrevious(step) {
 									</tr>
 									<tr>
 										<td>
-											<img src='https://img.youtube.com/vi/OrVmxZATDCs/mqdefault.jpg' width='200px' height='150rem' >
+											<img class="medi" src="https://img.youtube.com/vi/HJ17Oc9I2R8/mqdefault.jpg" width="100%" height="200px" onclick="mediSelection('HJ17Oc9I2R8');">
 										</td>
 										<td>
 											무기력할 때
@@ -384,21 +546,24 @@ function showPrevious(step) {
 									</table>
 								</li>
 							</ul>
-							
 							<div class="btns text-center">
 								<a href="#" class="btn btn-style02" onClick='showPrevious("step02")'><span>이전</span> </a>
 								<a href="#" class="btn btn-style01" onClick='showNext("step02")'><span>다음</span> </a>
 							</div>
 						</div>	
  							
-
+						<form name="mediForm" id="mediForm" action="/medi-step02" method="post">
 						<section class="web step03" style="display:none;">
 							<ul class="signature row">
 								<li class="col-xs-12 col-sm-12">
 									<!-- 	비디오 플레이어 -->
-									<section class="video-area">
-										<iframe width="560" height="315" src="https://www.youtube.com/embed/OrVmxZATDCs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+									<section class="video-wrapper"  >
+										<section class="video-area"  id="player"></section>
 									</section>
+	
+									
+									   
+									
 									<section class="paper-area">
 										<section class="emoticon_wrapper">
 											<span id="diaryEmoticon" class="emoticon"></span>
@@ -416,7 +581,7 @@ function showPrevious(step) {
 
 									                <section class="noteformwrapper">
 
-									                        <textarea class="content"  name="mailContent" id="" title="" placeholder="마음을 전하세요" value=""></textarea>
+									                        <textarea class="content"  name="content" id="" title="" placeholder="마음을 전하세요" value=""></textarea>
 									     
 									                </section>
 		
@@ -439,17 +604,64 @@ function showPrevious(step) {
 											</section>	
 									
 									<section class="tag-wrapper text-center" style="margin: 30px 0;">
-										<input type="text" class="tag" value="일">
-										<input type="text" class="tag" value="학교">
-										<input type="text" class="tag" value="가족">
-										<input type="text" class="tag" value="친구">
-										<input type="text" class="tag" value="여행">
-										<input type="text" class="tag" value="자기 돌봄">
-										<input type="text" class="tag" value="관계">
-										<input type="text" class="tag" value="돈">
-										<input type="text" class="tag" value="음식">
-										<input type="text" class="tag" value="건강">
+										
+										<section class="toggleArea"><!--<span class="tit">자동갱신</span>  -->
+											<!-- <input id="toggleAuto" type="checkbox" checked data-toggle="toggle" data-style="ios"> -->
+											<label class="switch">
+											<input id="toggleAuto" name="tags"  type="checkbox" value="일" />
+											<span class="slider round">일</span> 
+											</label>
+											<!-- <p style="display:none;">OFF</p><p class="on">ON</p> -->
+									
+											<!-- <input id="toggleAuto" type="checkbox" checked data-toggle="toggle" data-style="ios"> -->
+											<label class="switch">
+											<input id="toggleAuto" name="tags"  type="checkbox" value="학교" />
+											<span class="slider round">학교</span> 
+											</label>
+											<!-- <p style="display:none;">OFF</p><p class="on">ON</p> -->
+									
+											<!-- <input id="toggleAuto" type="checkbox" checked data-toggle="toggle" data-style="ios"> -->
+											<label class="switch">
+											<input id="toggleAuto" name="tags"  type="checkbox" value="가족" />
+											<span class="slider round">가족</span> 
+											</label>
+											<!-- <p style="display:none;">OFF</p><p class="on">ON</p> -->
+											
+											<label class="switch">
+											<input id="toggleAuto" name="tags"  type="checkbox" value="친구" />
+											<span class="slider round">친구</span> 
+											</label>
+											
+											<label class="switch">
+											<input id="toggleAuto" name="tags"  type="checkbox" value="여행" />
+											<span class="slider round">여행</span> 
+											</label>
+											
+											<label class="switch">
+											<input id="toggleAuto" name="tags"  type="checkbox" value="자기 돌봄" />
+											<span class="slider round">자기 돌봄</span> 
+											</label>
+											
+											<label class="switch">
+											<input id="toggleAuto" name="tags"  type="checkbox" value="관계" />
+											<span class="slider round">관계</span> 
+											</label>
+											
+											<label class="switch">
+											<input id="toggleAuto" name="tags"  type="checkbox" value="음식" />
+											<span class="slider round">음식</span> 
+											</label>
+											
+											<label class="switch">
+											<input id="toggleAuto" name="tags"  type="checkbox" value="건강" />
+											<span class="slider round">건강</span> 
+											</label>
+											
+											
+										</section>	
 									</section>
+									
+									
 									<section class="file-wrapper text-center"  style="margin: 30px 0;">
 										<input type="file" id="bg-upload">
 									</section>	
@@ -459,12 +671,19 @@ function showPrevious(step) {
 								
 							</ul>
 							
+							<input type="hidden"  id="selectedEmotion" name="emcId" value="">
+							<input type="hidden" id="selectedMedi" name="mvId" value="">
+							<input type="hidden" id="userId" name="author" value="test">
+							<input type="hidden" id="mediPlayTime" name="mvDrt" >
+						
+							
 							<div class="btns text-center">
-								<a href="#" class="btn btn-style02" onClick='showPrevious("step03")'><span>이전</span> </a>
+								<!-- <a href="#" class="btn btn-style02" onClick='showPrevious("step03")'><span>이전</span> </a> -->
 								<a href="#" class="btn btn-style01" onClick='showNext("step03")'><span>다음</span> </a>
 							</div>
 						</section>	
- 							
+ 						</form>
+							
  							<div class="web step04" style="display:none;">
 							<ul class="signature row">
 								<li class="col-xs-12 col-sm-12">
@@ -487,10 +706,7 @@ function showPrevious(step) {
 						</div>		
  							
  							
-							<input type="text"  id="selectedEmotion" value="">
-							<input type="text"  id="selectedMedi" value="">
-							<input type="text"  id="startedTime" value="">
-							<input type="text"  id="endedTime" value="">
+
 
 							
 						<div class="pad">
@@ -499,20 +715,16 @@ function showPrevious(step) {
 					</div></div>
 
 <script>
-	var gContextPath = "";
 
-	
-	// 레이어 호출용 메소드
-	function layer_open(){
-	 	$(".popup-layout").fadeIn();
-	 	$("#srcData").select();
+$(document).ready(function(){
+    $("iframe").load(function(){
+        $(this).contents().on("mousedown, mouseup, click", function(){
+            alert("Click detected inside iframe.");
+        });
+    });
+});
 
 
-	}
-
-	function layer_close(){
-		$(".popup-layout").fadeOut();
-	}
 </script></div>
     	</section>
     	<a href="#uppermost" class="go-top"><i class="xi-arrow-up"></i><span class="sr-only">페이지 맨위로 이동</span></a>

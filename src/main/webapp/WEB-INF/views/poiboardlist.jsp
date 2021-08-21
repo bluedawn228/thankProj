@@ -38,13 +38,17 @@ margin-left:10px;
 font-size:140%;
 font-weight:400;
 }
+.poipage a {
+
+	padding:0 10px 0 10px;
+}
 </style>
 
 <script>
 function searchPOI(){
 	var str = $("#searchText").val();
  	//alert(str);
-	location.href='./POIBoardSearch?searchText='+ str;
+	location.href='/POIBoardSearch?searchText='+ str;
 }
 
 $(document).ready(function(){
@@ -56,7 +60,7 @@ $(document).ready(function(){
 		sortID=$(this).attr("id");
 		$("#colSortId").val(sortID);
 		
-		$("#POIBOardList_Form").attr("action", "../.././POIBoardSort/columnSort");
+		$("#POIBOardList_Form").attr("action", "/POIBoardSort/columnSort");
 		$("#POIBOardList_Form").submit();
 		
 	}) //thSort
@@ -76,7 +80,7 @@ $(document).ready(function(){
 	}); //filter
 	
 	$("#filterSet").click(function(){
-		$("#POIBOardList_Form").attr("action", "../.././POIBoardSort/filter");
+		$("#POIBOardList_Form").attr("action", "/POIBoardSort/filter");
 		$("#POIBOardList_Form").submit();
 	})
 	
@@ -113,68 +117,35 @@ $(document).ready(function(){
 				<div class="cont-mid ">
 					
 
-		<div class="page-count-wrap01 clearfix">
-		<span>필터</span>
-		<select class="filter" name="selectionDivision" id="selectionDivision">
-			<option>구분</option>
-			<option value="1">병원</option>
-			<option value="2">상담소</option>
-		</select>
-		<select class="filter" name="selectionProvince" id="selectionProvince">
-			<option>지역</option>
-		<c:forEach items="${provinceList}" var="list">
-			<option value="${list}">${list}</option>
-		</c:forEach>
-		</select>
-		<select class="filter" name="selectionRate" id="selectionRate">
-			<option>등급</option>
-		<c:forEach items="${rateList}" var="list">
-			<option value="${list}">${list}</option>
-		</c:forEach>
-		</select>
-		<button id="filterSet" type="button">적용하기</button>
-		<span>정렬</span>
-		<button class="" onclick="location.href='./POIBoardSort?sortId=address&sortOrder=asc&page=1'">지역순</button>
-		<button class="" onclick="location.href='./POIBoardSort?sortId=cno&sortOrder=desc&page=1'">댓글순</button>
-		<button class="" onclick="location.href='./POIBoardSort?sortId=recommend&sortOrder=desc&page=1'">추천순</button>
-		
-		<input type="text" id="searchText" name="searchText"><button class="" onclick="searchPOI();">검색</button>
-
-		<button class="" onclick="location.href='./POIBoardInsert'">등록하기</button>
-		
-		
-		
-		
-		
-			<div class="page-count">
-				<div class="page-total">
-					총 <em><strong>26</strong></em>건<span class="comma">,</span>
-				</div>
-				<div class="page-now">
-					현재페이지 <em>1</em>/
-					3</div>
-			</div>
-			<div class="category-wrap">
-				<div class="select-wrap">
-					<label for="schType" class="hidden">검색구분</label>
-					<select name="schType" id="schType" title="검색구분">
-						<option value="1" >제목</option>
-						<option value="2" >내용</option>
-						<option value="3" >작성자</option>
-					</select>
-				</div>
-				<div class="input-wrap">
-					<input name="schText" id="schText" title="검색어입력" placeholder="검색어를 입력해주세요." type="text" value="" />
-					<button type="button" name="button" id="btnSearch">
-						<i class="xi-search"></i>
-						<span class="hidden">검색</span>
-					</button>
-				</div>
-			</div>
-		</div>
-
-	<!-- //검색 결과 -->
-
+						<div class="page-count-wrap01 clearfix">
+									<span>필터</span>
+									<select class="filter" name="selectionDivision" id="selectionDivision">
+										<option>구분</option>
+										<option value="1">병원</option>
+										<option value="2">상담소</option>
+									</select>
+									<select class="filter" name="selectionProvince" id="selectionProvince">
+										<option>지역</option>
+									<c:forEach items="${provinceList}" var="list">
+										<option value="${list}">${list}</option>
+									</c:forEach>
+									</select>
+									<select class="filter" name="selectionRate" id="selectionRate">
+										<option>등급</option>
+									<c:forEach items="${rateList}" var="list">
+										<option value="${list}">${list}</option>
+									</c:forEach>
+									</select>
+									<input id="filterSet" type="button" value="적용하기">
+									<span>정렬</span>
+									<input type="button" value="지역순" onclick="location.href='./POIBoardSort?sortId=address&sortOrder=asc&page=1'">
+									<input type="button" value="댓글순" onclick="location.href='./POIBoardSort?sortId=cno&sortOrder=desc&page=1'">
+									<input type="button" value="추천순" onclick="location.href='./POIBoardSort?sortId=recommend&sortOrder=desc&page=1'">
+									
+									<input type="text" id="searchText" name="searchText"><input type="button" value="검색" onclick="searchPOI();">
+							
+									<input  type="button"  onclick="location.href='./POIBoardInsert'" value="등록하기">
+						</div>
 
 	<!-- 일반 PC 버전 레이아웃 -->
 	<div class="board-style01 board-style03">
@@ -221,7 +192,7 @@ $(document).ready(function(){
 			</thead>
 			<tbody>
 				<c:forEach items="${list }" var="list" >
-				<tr onClick="location.href='./POIBoardDetail?bno=${list.bno }&page=${pageInfo.page}'">	
+				<tr onClick="location.href='/POIBoardDetail?bno=${list.bno }&page=${pageInfo.page}'">	
 					<!--  -->
 					<td style="width:20%;text-align:center;">
 		
@@ -265,22 +236,21 @@ $(document).ready(function(){
 						</tbody>
 		</table>
 	</div>
-<p class="btns right">
-	</p>
-<p class="pager">
+
+<div class="poipage" style="width:100%; text-align:center;vertical-align:middle;">
 		<c:choose>
 						<c:when test="${pageInfo.page<=1}">
-							[이전]&nbsp;
+							[이전]
 						</c:when>
 						<c:otherwise>  
-							<a href="./POIBoardSort?sortId=${sortId}&sortOrder=${sortOrder}&page=${pageInfo.page-1}&filterDivision=${filterDivision}&filterProvince=${filterProvince}&filterRate=${filterRate}">[이전]</a>&nbsp;
+							<a href="./POIBoardSort?sortId=${sortId}&sortOrder=${sortOrder}&page=${pageInfo.page-1}&filterDivision=${filterDivision}&filterProvince=${filterProvince}&filterRate=${filterRate}" >[이전]</a>
 						</c:otherwise>
 					</c:choose>
 					<c:forEach var="i" begin="${pageInfo.startPage }" end="${pageInfo.endPage }">
 						<c:choose>
 							<c:when test="${pageInfo.page==i }">[${i }]</c:when>
 							<c:otherwise>
-								<a href="./POIBoardSort?sortId=${sortId}&sortOrder=${sortOrder}&page=${i}&filterDivision=${filterDivision}&filterProvince=${filterProvince}&filterRate=${filterRate}">[${i }]</a>
+								<a href="./POIBoardSort?sortId=${sortId}&sortOrder=${sortOrder}&page=${i}&filterDivision=${filterDivision}&filterProvince=${filterProvince}&filterRate=${filterRate}"  >[${i }]</a>
 							</c:otherwise>
 						</c:choose>
 					</c:forEach>
@@ -289,10 +259,10 @@ $(document).ready(function(){
 							[다음]
 						</c:when>
 						<c:otherwise>
-							<a href="./POIBoardSort?sortId=${sortId}&sortOrder=${sortOrder}&page=${pageInfo.page+1}&filterDivision=${filterDivision}&filterProvince=${filterProvince}&filterRate=${filterRate}">[다음]</a>
+							<a href="./POIBoardSort?sortId=${sortId}&sortOrder=${sortOrder}&page=${pageInfo.page+1}&filterDivision=${filterDivision}&filterProvince=${filterProvince}&filterRate=${filterRate}"  >[다음]</a>
 						</c:otherwise>
 					</c:choose>
-		</p>
+		</div>
 </c:when>	
 			<c:otherwise>
 				<section id="emptyArea">등록된 글이 없습니다.</section>

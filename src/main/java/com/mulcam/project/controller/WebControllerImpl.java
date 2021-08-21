@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.mulcam.project.service.ConsolationService;
 import com.mulcam.project.vo.ConsolationVO;
+import com.mulcam.project.vo.MediDiaryVO;
 import com.mulcam.project.vo.MemberVO;
 
 @Controller
@@ -92,26 +94,7 @@ public class WebControllerImpl implements WebController{
 	}
 
 	
-	@Override
-	@GetMapping("/medi")
-	public String medi() {
-		
-		return "medi-introduce";
-	}
 	
-	@Override
-	@GetMapping("/medi-step01")
-	public String mediStep01() {
-		
-		return "medi-step01";
-	}
-	
-	@Override
-	@GetMapping("/medi-community")
-	public String mediCommunity() {
-		
-		return "medi-community";
-	}
 
 	
 	@Override
