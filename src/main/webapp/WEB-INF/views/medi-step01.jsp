@@ -283,7 +283,7 @@ function showNext(step) {
 			($("#mediPlayTime").val(lasttottime))
 		}
 			
-		alert($("#mediPlayTime").val());
+		//alert($("#mediPlayTime").val());
 		$("#mediForm").submit();
 		//alert("1");
 	}
@@ -356,7 +356,7 @@ function onPlayerStateChange(event) {
     } else if (event.data == YT.PlayerState.PAUSED ) {
   	  	tottime += new Date().getTime() - starttime;
   	  	 $("#mediPlayTime").val(tottime);
-  	  	alert(typeof tottime);
+  	  	//alert(typeof tottime);
     } else if  (event.data == YT.PlayerState.ENDED ) {
   	    tottime += new Date().getTime() - starttime;
   	    $("#mediPlayTime").val(tottime);
@@ -551,8 +551,10 @@ function unicodeToChar(text){
 								<a href="#" class="btn btn-style01" onClick='showNext("step02")'><span>다음</span> </a>
 							</div>
 						</div>	
- 							
-						<form name="mediForm" id="mediForm" action="/medi-step02" method="post">
+						
+						
+						
+ 						<form name="mediForm" id="mediForm" action="/medi-step01" method="post">  	
 						<section class="web step03" style="display:none;">
 							<ul class="signature row">
 								<li class="col-xs-12 col-sm-12">
@@ -562,7 +564,7 @@ function unicodeToChar(text){
 									</section>
 	
 									
-									   
+									 
 									
 									<section class="paper-area">
 										<section class="emoticon_wrapper">
@@ -581,7 +583,7 @@ function unicodeToChar(text){
 
 									                <section class="noteformwrapper">
 
-									                        <textarea class="content"  name="content" id="" title="" placeholder="마음을 전하세요" value=""></textarea>
+									                        <textarea class="content"  name="content" id="" title="" placeholder="마음을 기록해 보세요" value=""></textarea>
 									     
 									                </section>
 		
@@ -714,18 +716,7 @@ function unicodeToChar(text){
 						</div><!--//mobile-->
 					</div></div>
 
-<script>
-
-$(document).ready(function(){
-    $("iframe").load(function(){
-        $(this).contents().on("mousedown, mouseup, click", function(){
-            alert("Click detected inside iframe.");
-        });
-    });
-});
-
-
-</script></div>
+</div>
     	</section>
     	<a href="#uppermost" class="go-top"><i class="xi-arrow-up"></i><span class="sr-only">페이지 맨위로 이동</span></a>
 	</main>

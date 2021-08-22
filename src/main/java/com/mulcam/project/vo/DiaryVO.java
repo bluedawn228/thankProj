@@ -1,6 +1,5 @@
 package com.mulcam.project.vo;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 public class DiaryVO {
@@ -10,8 +9,6 @@ public class DiaryVO {
     
     //이모티콘
     private int emcId;
-    private String emcData;
-    private String emcText;
     
     //명언
     private int phrsId;
@@ -25,7 +22,7 @@ public class DiaryVO {
     
     //태그
     private String tags;
-    private String[] tagList;
+
     
     private String content;
     private int opened;
@@ -38,11 +35,20 @@ public class DiaryVO {
     private double stmAnlsPst;
     private double stmAnlsNtr;
     private double stmAnlsNgt;
-    private double pgStat;
+    
     
     private Date regdate;
     private Date moddate;
     
+    
+    //이모티콘 
+    private String emcData;
+    private String emcText;
+    //클로바 감정 분석
+    private double pgStat;
+    
+    //태그    
+    private String[] tagList;
     
 	public int getDiaryId() {
 		return diaryId;

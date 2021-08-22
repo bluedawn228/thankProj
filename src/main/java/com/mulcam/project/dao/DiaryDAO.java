@@ -1,7 +1,9 @@
 package com.mulcam.project.dao;
 
+import java.util.ArrayList;
+
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.data.repository.query.Param;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.mulcam.project.vo.DiaryVO;
@@ -21,15 +23,19 @@ public interface DiaryDAO {
 	
 	public int countAllPharse();
 	
+	public void updateOpenDiary(int diaryId);
+	
 	public PharseVO selectOnePharse(int randomNum);
 	
-	public DiaryVO selectAllByAuthor(String author);
+	public ArrayList<DiaryVO> selectAllByAuthor(String author);
 	
 	public int selectCntByAuthor(String author);
 	
-	public DiaryVO selectAllOpenedForPaging(@Param("startrow") int startrow, @Param("endrow") int endrow);
+	public ArrayList<DiaryVO> selectAllOpenedForPaging(@Param("startrow") int startrow, @Param("endrow") int endrow);
 	
-	public DiaryVO selectByAuthorForPaging(@Param("author") String author, @Param("startrow") int startrow, @Param("endrow") int endrow);
+	public ArrayList<DiaryVO> selectByAuthorForPaging(@Param("author") String author, @Param("startrow") int startrow, @Param("endrow") int endrow);
+
+	public PharseVO selectPharseById(int phrId);
 	
 	
 	

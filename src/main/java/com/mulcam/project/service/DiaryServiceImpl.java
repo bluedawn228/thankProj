@@ -1,5 +1,7 @@
 package com.mulcam.project.service;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,10 +39,24 @@ public class DiaryServiceImpl implements DiaryService {
 			return dao.selectOnePharse(randomNum);
 		}
 		
-	
+		//명언 내용 조회
+			@Override
+			public PharseVO  getPharseById(int phrId){
+				return dao.selectPharseById(phrId);
+			}
+		
+	//게시자의 개시글 갯수 조회
+	@Override
+	public int getCntByAuthor(String author) {
+		return dao.selectCntByAuthor(author);
+	}
 	//게시글 1개 조회
 	@Override
 	public DiaryVO  getArticleById(int diaryId){
+		System.out.println("++++++++++++service++++++++++++");
+		DiaryVO vo = dao.selectOneByDiaryId(diaryId);
+		System.out.println(vo.getStmAnlsPst());
+		System.out.println(vo.getStmAnlsNgt());
 		return dao.selectOneByDiaryId(diaryId);
 	}
 	
@@ -50,17 +66,23 @@ public class DiaryServiceImpl implements DiaryService {
 		return dao.selectRecentOneByAuthor(author);
 	}
 	
+	//게시글 공개 여부 공개로 변경
+	@Override
+	public void openDiaryById(int diaryId) {
+		dao.updateOpenDiary(diaryId);
+	}
 	
 	//작성자의 모든 게시글 조회(페이징)	
 	@Override
-	public DiaryVO  getArticlesByAuthor(String author, int startrow, int endrow){
+	public ArrayList<DiaryVO>  getArticlesByAuthor(String author, int startrow, int endrow){
 		return dao.selectByAuthorForPaging(author, startrow, endrow);
 	}
 	
 	
 	//모든 공개 게시글 조회(페이징)
 	@Override
-	public DiaryVO  getAllOpenedArticles(int startrow, int endrow){
+	public ArrayList<DiaryVO>  getAllOpenedArticles(int startrow, int endrow){
+		System.out.println("++++++++++"+ startrow+"+++++++++++++"+ endrow+"+++++++++++");
 		return dao.selectAllOpenedForPaging(startrow, endrow);
 	}
 	

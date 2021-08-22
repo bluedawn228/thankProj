@@ -121,17 +121,22 @@
     }
 
     .web {
+    	z-index: 999;
         width: 100%;
         text-align: center;
         border: 1px #eee solid;
         box-shadow: 5px 10px 10px rgba(0, 0, 0, .6);
     }
-
+    
+  
     .upperWrapper {
-        width: 100%;
+    	margin:20px;
+        width: 97%;
         display: block;
-        border-right-width: 10px;
-        border-right-color: rgba(0, 0, 0, 1);
+        border : 1px #eee solid;
+        border-radius : 30px;
+        background-color: #edf3f8 ;
+        
 
     }
 
@@ -267,6 +272,7 @@
     	margin: 20px 0;
         padding: 50px 0;
         width: 98%;
+        min-height:300px;
         display: inline-block;
         line-height: 60px;
         font-size: 30px;
@@ -274,8 +280,25 @@
         text-align: center;
         border: 1px #eee solid;
         border-radius: 30px;
-
+		position:relative;
     }
+    
+    
+    .innerContent::before {
+    	content: "";
+		background: #edf3f8 url(/images/background/window-5850628.png) no-repeat 50% 50% / cover;
+        opacity: 0.2;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+        border: 1px #eee solid;
+        border-radius: 30px;
+
+    
+    }
+    
 
     .lowerWrapper .innerTags {
         margin: 20px 0;
@@ -287,7 +310,8 @@
         font-weight:800;
         border: 1px #eee solid;
         border-radius: 30px;
-
+		background-color :  #edf3f8;
+		
     }
 	.tagbox {
 		text-align:center;
@@ -299,6 +323,8 @@
 		box-shadow:  3px 3px 5px 1px teal;
 	}
 </style>
+
+
 </head>
 
 <body>
@@ -315,10 +341,11 @@
                 <h1 class="stitle">감사명상 일기 결과</h1>
                 <div id="contents" class="container">
                     <div class="cont-mid ">
-
+						<div class="web-bg"></div>
                         <div class="web">
                             <input type="hidden" id="progress" value="${md.pgStat}">
                             <input type="hidden" id="diaryId" value="${md.diaryId}">
+                            <input type="text" id="authorId" value="${md.author}">
                             <div class="upperWrapper">
                                 <div class="diaryContent">
                                     <div class="emc">
@@ -330,8 +357,8 @@
                                             <fmt:formatDate value="${md.regdate}" pattern="yyyy년 mm월 dd일 EE요일" /><br>
                                             <fmt:formatDate value="${md.regdate}" pattern="hh시 mm분" />
                                         </span>
-                                        <span class="regAuthor"><strong>${md.author}</strong> 님의 감사일기</span>
-                                        <span class="regDuration">명상 시간 : ${mvDT}</span>
+                                        <span class="regAuthor"><strong>${md.author}</strong> 님의 <strong>${aCnt}</strong> 번째 감사일기</span>
+                                        <span class="regDuration">명상 시간 : ${md.mvDT}</span>
 
                                     </div>
 
@@ -368,9 +395,9 @@
                                 </div>
                             </div>
 							<div class="btns text-center">
-								<a href="#" class="btn btn-style01" onClick=''><span style="color:white;font-weight:400;">감사일기 공유 및 이동</span> </a>
+								<a href="#" class="btn btn-style01" onClick='updateShareType()'><span style="color:white;font-weight:400;">감사일기 공유 및 이동</span> </a>
 								&nbsp;&nbsp;&nbsp;
-								<a href="#" class="btn btn-style02" onClick=''><span><strong>공유 안하고 이동</strong></span> </a>
+								<a href="#" class="btn btn-style02" onClick='goMediCommunity()'><span><strong>공유 안하고 이동</strong></span> </a>
 							</div>
 
                         </div>
@@ -388,5 +415,20 @@
             document.querySelector('#progressbar').style.width = pValue + '%';
 
         </script>
+        
+        <script>
+			const diaryId = $("#diaryId").val();
+			const authorId = $("#authorId").val();
+			function updateShareType() {
+				//alert(typeof diaryId);
+				//alert(typeof authorId);
+				location.href='/medi-share?diaryId='+diaryId+'&authorId='+authorId;
+			}
+			
+			function goMediCommunity() {
+				location.href='/medi-community?authorId='+authorId;
+			}
+			
+		</script>
 
         <jsp:include page="./sub/footer.jsp" />

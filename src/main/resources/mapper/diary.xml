@@ -39,6 +39,25 @@
 			 WHERE num = #{randomNum}       
 	</select>
 	
+	<!-- 명언 1개 조회 -->
+	<select id="selectPharseById" parameterType="int" resultType="PharseVO">
+		SELECT
+			    num,
+			    phrs_id,
+			    phrs_text,
+			    author
+			FROM
+			    (SELECT
+			        row_number() over(order by a.phrs_id) num,
+			        a.phrs_id,
+			        a.phrs_text,
+			        a.author
+			    FROM
+			        ttb_pharse a
+			        )
+			 WHERE phrs_id = #{phrId}       
+	</select>
+	
 	
 	<!--  게시글 등록 -->
 	<insert id="insertOneArticle" parameterType="DiaryVO">
@@ -140,9 +159,9 @@
 					    d.comm_cnt,
 					    d.rcmd_cnt,
 					    d.view_cnt,
-					    d.stm_anl_pst,
-					    d.stm_anl_ntr,
-					    d.stm_anl_ngt,
+					    d.stm_anl_pst as stmAnlsPst,
+					    d.stm_anl_ntr as stmAnlsNtr,
+					    d.stm_anl_ngt as stmAnlsNgt,
 					    d.regdate,
 					    d.moddate
 			FROM
@@ -153,6 +172,13 @@
 	    		
 	
 	</select>
+	
+	<!-- 게시글 공개로 변경 -->
+	<update id="updateOpenDiary" parameterType="int">
+		update ttb_diary
+			set opened = '1'
+		where diary_id = #{diaryId}
+	</update>
 	
 	<!-- 작성자의 모든 게시글 조회 -->
 	<select id="selectAllByAuthor" parameterType="String" resultType="DiaryVO">
@@ -228,7 +254,7 @@
 					            a.*
 					FROM
 					    		ttb_diary a
-					Where a.opened = 1    		
+					Where a.opened = 1
 			    		) 
 
 			WHERE

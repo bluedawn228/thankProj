@@ -11,8 +11,12 @@ public interface DiaryController {
 	
 	public String mediStep01() ;
 	
-	public ModelAndView mediStep02(DiaryVO vo) throws ParseException ;
+	public ModelAndView mediStep01(DiaryVO vo) throws ParseException ;
 	
-	public String mediCommunity() ;
+	public ModelAndView mediStep02(int diaryId) throws ParseException ;
+	
+	public String mediShareUpdate( String diaryId,  String authorId);
+	
+	public ModelAndView mediCommunity(String authorId);
 
 }
