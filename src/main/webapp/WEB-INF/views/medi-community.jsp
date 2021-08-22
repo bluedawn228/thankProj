@@ -25,6 +25,12 @@
         position: relative;
         display: flex;
         flex-direction: column;
+        box-shadow: 5px 10px 10px rgba(0, 0, 0, .6);
+    }
+    
+    .postit-container:hover {
+        transform: scale(1.2);
+		/* box-shadow: 5px 10px 10px rgba(0, 0, 0, .6); */
     }
 
     .postit:after {
@@ -36,7 +42,7 @@
         width: 200px;
         height: 25px;
         background: rgba(0, 0, 0, 0.2);
-        box-shadow: 2px 15px 5px rgba(0, 0, 0, 0.40);
+        box-shadow: 5px 15px 15px rgba(0, 0, 0, 0.40);
         transform: matrix(-1, -0.1, 0, 1, 0, 0);
     }
 
@@ -79,18 +85,44 @@
         border-radius: 3px;
         font-family: inherit;
         margin: auto;
+        background-color : #fff;
     }
 
     .edit-tools button {
+    	padding : 5px 10px;
         border: 1px solid #e5e5e5;
         color: #444;
-        border-radius: 3px;
+        border-radius: 10px;
         font-family: inherit;
         margin: auto;
         font-size: 0.8rem;
+        background-color : #fff;
     }
-
+    .postContent{
+     /* 특정 단위로 텍스트를 자르기 위한 구문 */
+		white-space: normal;
+		display: -webkit-box;
+		-webkit-line-clamp: 2; /* 텍스트를 자를 때 원하는 단위 ex) 3줄 */
+		-webkit-box-orient: vertical;
+		overflow: hidden;  
+    }
+	body {
+	  background: #FFDAB9;
+  	  background-image:url(https://raw.github.com/subtlepatterns/SubtlePatterns/gh-pages/retina_wood.png);
+       -webkit-font-smoothing: antialiased;
+      font-smoothing: antialiased;
+	}
+	
+	.pinterest-more-btn{
+		background-color:#fff;
+	}
 </style>
+<script>
+
+function viewDetail(id){
+	location.href="/medi-community-detail?diaryId="+id;
+}
+</script>
 </head>
 
 <body>
@@ -104,7 +136,7 @@
             <div id="spot" class="sub1">
 
             </div>
-            <section class="cont-wrap horizontal">
+            <section class="cont-wrap horizontal wood">
                 <h1 class="stitle">감사명상 커뮤니티</h1>
                 <div id="contents" class="container">
                     <!-- 	작성자 게시글 4개 -->
@@ -118,7 +150,7 @@
                             
                             
                         <div class="category-wrap"> 
-                             <div style="font-size:30px;"><em>${author}</em> 님의 최근 감사일기</div>
+                             <div style="font-size:30px;"><strong><em>${author}</em> 님의 최근 감사일기</strong></div>
                          </div>
 
                         </div>
@@ -128,11 +160,10 @@
                             <c:forEach items="${authorList}" var="post">
                                 <li class="col-md-3 col-sm-6 col-xs-12 pinterest-board-img pinterest-item">
 
-
-                                    <div class="postit-container">
+                                    <div class="postit-container" onclick="javascprit:viewDetail('${post.diaryId}')">
                                         <div class="postit yellow">
-                                            <p>${post.content}</p>
-                                            <span>${post.author}</span>
+                                            <p class="postContent">${post.content}</p>
+                                            <span style="margin-bottom:12px;">${post.author}</span>
                                             <div class="edit-tools">
                                                 <button>조회수 ${post.viewCnt}</button>
                                                 <button>좋아요 ${post.rcmdCnt}</button>
@@ -143,15 +174,14 @@
                                                 <button>응원 댓글 쓰기</button>
                                             </div>
                                         </div>
-
                                     </div>
 
                                 </li>
                             </c:forEach>
                         </ul>
 
-                        <div class="btns txt-center">
-                            <button type="button" id="more" class="pinterest-more-btn" onclick="javascript:fnMoreView();"><i class="xi-angle-down-min"></i>더보기</button>
+                        <div class="btns txt-center" style="margin: -20px 0">
+                            <button type="button" id="more" class="pinterest-more-btn" onclick="javascript:alert('마이페이지');"><i class="xi-angle-down-min"></i>더보기</button>
                         </div>
 
 
@@ -167,28 +197,9 @@
                             </div>
 
                             <div class="category-wrap">
-                                <div class="input-wrap">
-                                    <label for="schText" class="hidden">검색구분</label>
-
-                                    <input type="text" name="schText" id="schText" class="form-control" placeholder="태그를 선택해 주세요" value="" />
-                                    <button type="button" name="button" onclick='fn_search();'><i class="xi-search"></i> <span class="hidden">검색</span></button>
-                                </div>
-                            </div>
-
-                            <div class="category-wrap">
-                                <input type="text" class="form-control" value="추천순">
-                            </div>
-                            
-                            <div class="category-wrap">
-                                <input type="text" class="form-control" value="댓글순">
-                            </div>
-                            
-                            <div class="category-wrap">
-                                <input type="text" class="form-control" value="조회순">
-                            </div>
-                            
-                            <div class="category-wrap">
-                                <input type="text" class="form-control" value="최신순">
+                          
+                                   	<div style="font-size:30px;"><strong>최근 공개 감사일기</strong></div>
+                       
                             </div>
                             
                         </div>
@@ -198,10 +209,10 @@
                             <c:forEach items="${openedList}" var="post">
                                 <li class="col-md-3 col-sm-6 col-xs-12 pinterest-board-img pinterest-item">
 
-                                    <div class="postit-container">
+                                    <div class="postit-container" onclick="alert('${post.diaryId}')">
                                         <div class="postit yellow">
-                                            <p>${post.content}</p>
-                                            <span>${post.author}</span>
+                                            <p class="postContent">${post.content}</p>
+                                            <span style="margin-bottom:12px;">${post.author}</span>
                                             <div class="edit-tools">
                                                 <button>조회수 ${post.viewCnt}</button>
                                                 <button>좋아요 ${post.rcmdCnt}</button>
@@ -218,8 +229,8 @@
                             </c:forEach>
                         </ul>
 
-                        <div class="btns txt-center">
-                            <button type="button" id="more" class="pinterest-more-btn" onclick="javascript:fnMoreView();"><i class="xi-angle-down-min"></i>더보기</button>
+                        <div class="btns txt-center" style="margin: -20px 0;">
+                            <button type="button" id="more" class="pinterest-more-btn" onclick="javascript:alert('공개 게시글 목록');"><i class="xi-angle-down-min"></i>더보기</button>
                         </div>
                     </div>
 

@@ -17,6 +17,8 @@ public interface DiaryController {
 	
 	public String mediShareUpdate( String diaryId,  String authorId);
 	
+	public ModelAndView mediCommunityDetail(String diaryId) ;
+	
 	public ModelAndView mediCommunity(String authorId);
 
 }

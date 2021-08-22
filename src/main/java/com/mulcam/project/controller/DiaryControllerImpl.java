@@ -138,5 +138,13 @@ public class DiaryControllerImpl implements DiaryController {
 		mv.addObject("openedList", voList);
 		return mv;
 	}
+	
+	@Override
+	@GetMapping("/medi-community-detail")
+	public ModelAndView mediCommunityDetail(@RequestParam(value="diaryId") String diaryId) {
+		ModelAndView mv = new ModelAndView("medi-community-detail");
+		mv.addObject("diaryId", diaryId);
+		return mv;
+	}
 
 }
