@@ -31,8 +31,8 @@ public class MemberControllerImpl implements MemberController{
     //로그인
   	@Override
   	@GetMapping("/auth-signin")
-	public String login(@CookieValue(value = "cId", required = false) Cookie rCookie, Model model) throws Exception {
-  		
+	public ModelAndView login(@RequestParam(value="board", required = false ) String board, @RequestParam(value="bidx", required = false) String bidx, @CookieValue(value = "cId", required = false) Cookie rCookie, Model model) throws Exception {
+  		ModelAndView mv = new ModelAndView();
   		if (rCookie != null) {
 			System.out.println(" root Cookie");
 			String[] cidArry = rCookie.getValue().split("#");
@@ -45,15 +45,20 @@ public class MemberControllerImpl implements MemberController{
 			model.addAttribute("password", cidArry[1]);
 			model.addAttribute("rememberId", cidArry[2]);
 		}
-  		
 
+  		System.out.println("login :: " + board );
+  		System.out.println("login :: " + bidx );
+  		
+  		mv.addObject("bidx", bidx);
+  		mv.addObject("board", board);
+  		mv.setViewName("auth-signin");
 		
-  		return "auth-signin";
+  		return mv;
   	}
     //로그인
 	@Override
 	@PostMapping("/auth-signin")
-	public ModelAndView login(@ModelAttribute MemberVO memberVO, HttpServletResponse response,
+	public ModelAndView login(@ModelAttribute MemberVO memberVO, @RequestParam(value="board", required = false , defaultValue="index") String board, @RequestParam(value="bidx", required = false, defaultValue="1") String bidx, HttpServletResponse response,
 			HttpServletRequest request) throws IOException {
 		ModelAndView mv = new ModelAndView();
 		HttpSession session = request.getSession();
@@ -90,9 +95,14 @@ public class MemberControllerImpl implements MemberController{
 						session.setAttribute("userInfo", result);
 					}
 					
-					
-					mv.setViewName("index");
-					
+					System.out.println("board" + board);
+					if (board.equals("diary-detail")) {
+						System.out.println("diary-detail  =====  diaryId   " + bidx);
+						mv.addObject("diaryId", Integer.parseInt(bidx));
+						mv.setViewName("redirect:/medi-community-detail");
+					} else {
+						mv.setViewName("index");
+					}
 			  		
 					
 

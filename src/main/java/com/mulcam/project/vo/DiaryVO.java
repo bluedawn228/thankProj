@@ -50,6 +50,10 @@ public class DiaryVO {
     //태그    
     private String[] tagList;
     
+    
+    //페이지
+    private int page;
+    
 	public int getDiaryId() {
 		return diaryId;
 	}
@@ -187,6 +191,12 @@ public class DiaryVO {
 	}
 	public void setTagList(String[] tagList) {
 		this.tagList = tagList;
+	}
+	public int getPage() {
+		return page;
+	}
+	public void setPage(int page) {
+		this.page = page;
 	}
 	
 	

@@ -78,6 +78,7 @@
 				    stm_anl_pst,
 				    stm_anl_ntr,
 				    stm_anl_ngt,
+				    pgStat,
 				    regdate
 		) VALUES (
 				    #{diaryId},
@@ -96,6 +97,7 @@
 				    #{stmAnlsPst},
 				    #{stmAnlsNtr},
 				    #{stmAnlsNgt},
+				    #{pgStat},
 				    sysdate
 			)
 	
@@ -125,6 +127,7 @@
 					    d.stm_anl_pst,
 					    d.stm_anl_ntr,
 					    d.stm_anl_ngt,
+					    d.pgStat,
 					    d.regdate,
 					    d.moddate
 			FROM
@@ -162,6 +165,7 @@
 					    d.stm_anl_pst as stmAnlsPst,
 					    d.stm_anl_ntr as stmAnlsNtr,
 					    d.stm_anl_ngt as stmAnlsNgt,
+					    d.pgStat,
 					    d.regdate,
 					    d.moddate
 			FROM
@@ -198,6 +202,7 @@
 					    stm_anl_pst,
 					    stm_anl_ntr,
 					    stm_anl_ngt,
+					    pgStat,
 					    regdate,
 					    moddate
 			FROM
@@ -217,9 +222,42 @@
 			    		ttb_diary
 			WHERE
 						 author = #{author}
-			ORDER by
-						 regdate desc
+			
 	</select>
+	
+	<!-- 전체 개시글 갯수 조회 -->
+	<select id="selectCntAll" resultType="int">
+			SELECT
+					    nvl(count(diary_id),0)
+			FROM
+			    		ttb_diary
+			
+	</select>
+	
+	
+	<!-- 조회수 업데이트  --> 
+	<update id="updateViewCnt" parameterType="int">
+		UPDATE  ttb_diary
+               SET
+            	    view_cnt = nvl(view_cnt,0) + 1
+		        
+             WHERE diary_id = #{diaryId}
+	</update>
+	
+	<!-- 댓글 수 업데이트  --> 
+	<update id="updateCommCnt" parameterType="int">
+		UPDATE  ttb_diary d
+               SET
+            	    d.comm_cnt = (
+								            	    SELECT
+													    count(cidx)
+													FROM
+													    ttb_comments
+													WHERE
+													    diaryid =#{diaryId}
+            	    						)
+             WHERE d.diary_id = #{diaryId}
+	</update>
 	
 	
 	<!--페이징 처리를 위해 넘버링 후 전체 게시글 조회 -->
@@ -242,6 +280,7 @@
 					    stm_anl_pst,
 					    stm_anl_ntr,
 					    stm_anl_ngt,
+					    pgStat,
 					    regdate,
 					    moddate
 			FROM
@@ -284,6 +323,7 @@
 					    stm_anl_pst,
 					    stm_anl_ntr,
 					    stm_anl_ngt,
+					    pgStat,
 					    regdate,
 					    moddate
 			FROM
@@ -344,6 +384,7 @@
 
 	</select>
 	
+	<!-- 댓글 입력 -->
 	<insert id="insertDiaryCommById" parameterType="DiaryCommentsVO">
             <![CDATA[
 				 INSERT INTO ttb_comments (
@@ -362,7 +403,7 @@
             ]]>
 	</insert>
 	
-	
+	<!--댓글 작성자 ID로 댓글 조회 -->
 	<select id="selectDiaryCommById" parameterType="int" resultType="DiaryCommentsVO">
 				SELECT
 							    diaryid,
@@ -376,4 +417,132 @@
 				WHERE
 								diaryid = #{diaryId}    				
 	</select>
+	
+	<!--  감사 커뮤니티 - 나의 게시글 12개 씩 --> 
+	<select id="selectMyDiary" resultType="DiaryVO">
+			SELECT
+					    num,
+					    diary_id,
+					    img_id,
+					    emc_id,
+					    phrs_id,
+					    mv_id,
+					    mv_drt,
+					    author,
+					    tags,
+					    content,
+					    opened,
+					    comm_cnt,
+					    rcmd_cnt,
+					    view_cnt,
+					    stm_anl_pst,
+					    stm_anl_ntr,
+					    stm_anl_ngt,
+					    pgStat,
+					    regdate,
+					    moddate
+			FROM
+			    		(
+					    SELECT
+							    ROW_NUMBER()
+								            OVER(
+								                ORDER BY a.diary_id desc
+								            ) num,
+					            a.*
+					FROM
+					    		ttb_diary a
+					WHERE
+								a.author =   #{author}  		
+			    		) 
+
+			WHERE
+						 num between #{startrow} and #{startrow}+11
+			ORDER by
+						 regdate desc
+	
+	</select>
+	
+	<!--  감사 커뮤니티 - 나의 게시글 12개 씩 --> 
+	<select id="selectOpenedDiary" parameterType="int" resultType="DiaryVO">
+			SELECT
+					    num,
+					    diary_id,
+					    img_id,
+					    emc_id,
+					    phrs_id,
+					    mv_id,
+					    mv_drt,
+					    author,
+					    tags,
+					    content,
+					    opened,
+					    comm_cnt,
+					    rcmd_cnt,
+					    view_cnt,
+					    stm_anl_pst,
+					    stm_anl_ntr,
+					    stm_anl_ngt,
+					    pgStat,
+					    regdate,
+					    moddate
+			FROM
+			    		(
+					    SELECT
+							    ROW_NUMBER()
+								            OVER(
+								                ORDER BY a.diary_id desc
+								            ) num,
+					            a.*
+					FROM
+					    		ttb_diary a
+					WHERE
+								a.opened =   1
+			    		) 
+
+			WHERE
+						 num between #{startrow} and #{startrow}+11
+			ORDER by
+						 regdate desc
+	
+	</select>
+	
+	<!-- 감상일기 삭제 -->
+	
+	<delete id="deleteDiary"  parameterType="int">
+	
+	DELETE FROM ttb_diary
+		WHERE
+		diary_id = #{diaryId}
+	
+	</delete>
+	
+	<!-- 감상일기 비공개 전환 -->
+		
+	<update id="updateDiaryClosed" parameterType="int">
+
+            <![CDATA[
+            UPDATE  ttb_diary
+               SET
+            	    opened = 0
+		        
+             WHERE diary_id = #{diaryId}
+     
+            ]]>
+	</update>
+	
+	<!-- 감상일기 공개 전환 -->
+		
+	<update id="updateDiaryOpened" parameterType="int">
+
+            <![CDATA[
+            UPDATE  ttb_diary
+               SET
+            	    opened = 1
+		        
+             WHERE diary_id = #{diaryId}
+     
+            ]]>
+	</update>
+
+	
 </mapper>

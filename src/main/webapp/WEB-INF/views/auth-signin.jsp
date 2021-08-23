@@ -93,7 +93,9 @@ $(document).ready(function() {
 
 								        <div class="inner">
 								
-								            <form name="signin_form" id="signin_form" action="./auth-signin" method="post" >								                
+								            <form name="signin_form" id="signin_form" action="./auth-signin" method="post" >	
+												<input type="hidden" name="board" value="${board}">
+												<input type="hidden" name="bidx" value="${bidx}">							                
 								                 <label>
 											        <span>이메일</span><input type="text" name="id" class="form-control id" id="userId" placeholder="id" value="${id}"><br>
 											    </label>

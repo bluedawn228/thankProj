@@ -33,7 +33,21 @@ public interface DiaryService {
 	public void addDiaryComm(DiaryCommentsVO vo) ;
 	
 	public ArrayList<DiaryCommentsVO> getDiaryComm(int diaryId);
-	
 
+	public ArrayList<DiaryVO> getMyDiary(String authorId, int startrow);
+
+	public ArrayList<DiaryVO> getOpenedDiary(int startrow);
+	
+	public int getCntAll() ;
+
+	public void increaseViewCnt(int diaryId);
+	
+	public void refreshCommCnt(int diaryId);
+	
+	public void deleteDiary(int diaryId) ;
+	
+	public void cancelDiaryShare(int diaryId) ;
+
+	public void openDiary(int diaryId);
 
 }

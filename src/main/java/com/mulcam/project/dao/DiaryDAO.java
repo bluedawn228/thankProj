@@ -51,7 +51,25 @@ public interface DiaryDAO {
 	public int selectDiaryCommMaxId(int diaryId);
 
 	public ArrayList<DiaryCommentsVO> selectDiaryCommById(int diaryId);
+
+	public ArrayList<DiaryVO> selectMyDiary(@Param("author") String author, @Param("startrow") int startrow);
+
+	public ArrayList<DiaryVO> selectOpenedDiary(int startrow);
 	
+	public int selectCntAll();
+
+	public void updateViewCnt(int diaryId);
+	
+	public void updateCommCnt(int diaryId);
+
+	public void deleteDiary(int diaryId);
+
+	public void updateDiaryClosed(int diaryId);
+
+	public void updateDiaryOpened(int diaryId);
+	
+	
+
 	
 
 }
