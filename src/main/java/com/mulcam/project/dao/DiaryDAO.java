@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import com.mulcam.project.vo.DiaryCommentsVO;
 import com.mulcam.project.vo.DiaryVO;
 import com.mulcam.project.vo.PharseVO;
 
@@ -37,7 +38,19 @@ public interface DiaryDAO {
 
 	public PharseVO selectPharseById(int phrId);
 	
+	public void updateDairyRcmdByID(String articleId);
 	
+	public void updateDiaryCommById(int diaryId);
+
+	public int selectDiaryRcmdById(String diaryId);
+
+	public void insertDairyRcmdByID(String diaryId);
+
+	public void insertDiaryCommById(DiaryCommentsVO vo);
+
+	public int selectDiaryCommMaxId(int diaryId);
+
+	public ArrayList<DiaryCommentsVO> selectDiaryCommById(int diaryId);
 	
 	
 

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mulcam.project.dao.DiaryDAO;
+import com.mulcam.project.vo.DiaryCommentsVO;
 import com.mulcam.project.vo.DiaryVO;
 import com.mulcam.project.vo.PharseVO;
 
@@ -85,5 +86,38 @@ public class DiaryServiceImpl implements DiaryService {
 		System.out.println("++++++++++"+ startrow+"+++++++++++++"+ endrow+"+++++++++++");
 		return dao.selectAllOpenedForPaging(startrow, endrow);
 	}
+	
+	//좋아요 1 추가
+	@Override
+	public void addDiaryRcmd(String diaryId) {
+		dao.updateDairyRcmdByID(diaryId);
+
+	}
+
+	//좋아요 개수 조회
+	@Override
+	public int getDiaryRcmd(String diaryId) {
+		return dao.selectDiaryRcmdById(diaryId);
+	}
+	
+	//댓글 최종 id 조회
+	public int getDiaryCommMaxId(int diaryId) {
+		
+		return dao.selectDiaryCommMaxId(diaryId);
+	}
+	
+	//댓글 달기
+	@Override
+	public void addDiaryComm(DiaryCommentsVO vo) {
+		int currCidx = getDiaryCommMaxId(vo.getDiaryId());
+		vo.setCidx(currCidx+1);
+		 dao.insertDiaryCommById(vo);
+	}
+	
+	//댓글 조회
+		@Override
+		public ArrayList<DiaryCommentsVO> getDiaryComm(int diaryId) {
+			 return dao.selectDiaryCommById(diaryId);
+		}
 	
 }

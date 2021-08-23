@@ -1,6 +1,10 @@
 package com.mulcam.project.controller;
 
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -8,12 +12,16 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.mulcam.project.common.ClovaAPI;
 import com.mulcam.project.service.DiaryService;
+import com.mulcam.project.vo.DiaryCommentsVO;
 import com.mulcam.project.vo.DiaryVO;
 import com.mulcam.project.vo.PharseVO;
 
@@ -143,8 +151,65 @@ public class DiaryControllerImpl implements DiaryController {
 	@GetMapping("/medi-community-detail")
 	public ModelAndView mediCommunityDetail(@RequestParam(value="diaryId") String diaryId) {
 		ModelAndView mv = new ModelAndView("medi-community-detail");
-		mv.addObject("diaryId", diaryId);
+	
+		DiaryVO vo= service.getArticleById(Integer.parseInt(diaryId));
+		//긍정도와 부정도를 합산하여 긍정도 가중평균으로 전환(소주 2자리까지 계산)
+		vo.setPgStat( Double.parseDouble(String.format("%.2f",vo.getStmAnlsPst()/(vo.getStmAnlsPst()+vo.getStmAnlsNgt())*100)) ) ;
+		// 명언 목록에서 내용 가져오기
+	    PharseVO pOne = service.getPharseById(vo.getPhrsId());
+		mv.addObject("phrs",pOne);
+		//태그를 리스트로 변환
+	    String[] tagArray = vo.getTags().split(",");
+	    vo.setTagList(tagArray);
+	    //게시자의 몇번째 게시글인지 조회
+		int aCnt = service.getCntByAuthor(vo.getAuthor());
+		//댓글 출력
+		ArrayList<DiaryCommentsVO> dcList = service.getDiaryComm(vo.getDiaryId());
+		
+		
+		mv.addObject("aCnt", aCnt);
+		mv.addObject("diary", vo);
+		mv.addObject("dcList", dcList);
+
 		return mv;
 	}
+	
+	//좋아요 추천
+	@GetMapping("/DiaryRcmdCall")
+	public void DiaryRcmdCall(@RequestParam(value = "idx", required = true) String idx, HttpServletResponse response) throws Exception {
 
+		service.addDiaryRcmd(idx);
+
+		int recommendationCnt = service.getDiaryRcmd(idx);
+
+		PrintWriter out = response.getWriter();
+		DecimalFormat decFormat = new DecimalFormat("###,###");
+		String recommendationCntStr = decFormat.format(recommendationCnt);
+
+		out.append(recommendationCntStr);
+		out.flush();
+		System.out.println("DiaryRcmdCall start" + idx);
+	}
+	
+
+	// 상세 페이지 하단 댓글달기 (목록 페이지 > 상세페이지 = 댓글달기 )
+	@RequestMapping(value = "/addDiaryComm", method = RequestMethod.POST)
+	ModelAndView addCookingShowComments(@ModelAttribute("dc") DiaryCommentsVO dcVO) throws Exception {
+
+		System.out.println("addDiaryComm start");
+		ModelAndView modelAndView = new ModelAndView();
+
+		try {
+			service.addDiaryComm(dcVO);
+			modelAndView.setViewName("redirect:./medi-community-detail?diaryId=" + dcVO.getDiaryId());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			modelAndView.addObject("err", "오류 발생");
+			modelAndView.setViewName("error");
+
+		}
+		return modelAndView;
+	}
+	
 }

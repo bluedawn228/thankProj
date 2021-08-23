@@ -306,5 +306,74 @@
 						 regdate desc
 	
 	</select>
+	
+	
+	
+	<update id="updateDairyRcmdByID" parameterType="String">
 
+            <![CDATA[
+            UPDATE  ttb_diary
+               SET
+            	    rcmd_cnt = nvl(rcmd_cnt,0) + 1
+		        
+             WHERE diary_id = #{articleId}
+     
+            ]]>
+	</update>
+
+	<select id="selectDiaryRcmdById" parameterType="String"
+		resultType="int">
+
+            <![CDATA[
+            SELECT  nvl(rcmd_cnt,0)
+            
+             FROM ttb_diary
+            WHERE diary_id = #{articleId}
+ 
+            ]]>
+	</select>
+	
+	<!-- 게시글별 댓글의 최종 ID 조회 -->
+	<select id="selectDiaryCommMaxId" parameterType="int" resultType="int">
+			SELECT
+				    nvl(max(cidx),0)
+			FROM
+				    ttb_comments
+			WHERE
+					diaryid = #{diaryId}		    
+
+	</select>
+	
+	<insert id="insertDiaryCommById" parameterType="DiaryCommentsVO">
+            <![CDATA[
+				 INSERT INTO ttb_comments (
+							    diaryid,
+							    cidx,
+							    commenterid,
+							    comments,
+							    postdate
+				) VALUES (
+								 #{diaryId},
+								 #{cidx},
+								 #{commenterId},
+								 #{comments},
+								 sysdate
+				)
+            ]]>
+	</insert>
+	
+	
+	<select id="selectDiaryCommById" parameterType="int" resultType="DiaryCommentsVO">
+				SELECT
+							    diaryid,
+							    cidx,
+							    commenterid,
+							    comments,
+							    postdate,
+							    modifydate
+				FROM
+				    			ttb_comments
+				WHERE
+								diaryid = #{diaryId}    				
+	</select>
 </mapper>

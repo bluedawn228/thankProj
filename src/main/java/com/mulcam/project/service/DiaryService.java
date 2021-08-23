@@ -2,6 +2,7 @@ package com.mulcam.project.service;
 
 import java.util.ArrayList;
 
+import com.mulcam.project.vo.DiaryCommentsVO;
 import com.mulcam.project.vo.DiaryVO;
 import com.mulcam.project.vo.PharseVO;
 
@@ -25,6 +26,13 @@ public interface DiaryService {
 	
 	public ArrayList<DiaryVO>  getAllOpenedArticles(int startrow, int endrow);
 	
+	public void addDiaryRcmd(String diaryId) ;
+	
+	public int getDiaryRcmd(String diaryId) ;
+	
+	public void addDiaryComm(DiaryCommentsVO vo) ;
+	
+	public ArrayList<DiaryCommentsVO> getDiaryComm(int diaryId);
 	
 
 
